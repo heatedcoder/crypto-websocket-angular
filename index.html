@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="exchangeApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Real Time GDAX and Binance Exchange Rates</title>
+    <link rel="stylesheet" href="css/bootstrap.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <div class="container" ng-controller="exchangeCtrl">
+        <h1>Real Time GDAX and Binance Exchange Rates</h1>
+        <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">EXCHANGES</th>
+                    <th scope="col">GDAX</th>
+                    <th scope="col">BINANCE</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">BTC-USD</th>
+                    <td><span ng-bind="gdax.btc.usd|number:2"></span></td>
+                    <td><span ng-bind="binance.btc.usd|number:2"></span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">BTC-EUR</th>
+                    <td><span ng-bind="gdax.btc.eur|number:2"></span></td>
+                    <td><span ng-bind="binance.btc.eur|number:2"></span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">ETH-USD</th>
+                    <td><span ng-bind="gdax.eth.usd|number:2"></span></td>
+                    <td><span ng-bind="binance.eth.usd|number:2"></span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">ETH-EUR</th>
+                    <td><span ng-bind="gdax.eth.eur|number:2"></span></td>
+                    <td><span ng-bind="binance.eth.eur|number:2"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/controllers/exchange.controller.js"></script>
+</body>
+</html>
