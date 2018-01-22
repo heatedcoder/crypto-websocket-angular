@@ -15,6 +15,10 @@
          if(!$scope.diff['btc']) $scope.diff['btc'] = {};
          if(!$scope.diff['eth']) $scope.diff['eth'] = {};
 
+         if(!$scope.diffpct) $scope.diffpct = {};
+         if(!$scope.diffpct['btc']) $scope.diffpct['btc'] = {};
+         if(!$scope.diffpct['eth']) $scope.diffpct['eth'] = {};
+
         var wsBinanceBTCUSD = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
         var wsBinanceETHUSD = new WebSocket('wss://stream.binance.com:9443/ws/ethusdt@ticker');
         var wsBinanceETHBTC = new WebSocket('wss://stream.binance.com:9443/ws/ethbtc@ticker');
@@ -81,10 +85,12 @@
             var a = parseFloat($scope.gdax.btc.usd);
             var b = parseFloat($scope.binance.btc.usd);
             if(a > b) {
-                $scope.diff.btc.usd = ((a - b)/a)*100;
+                $scope.diff.btc.usd = a-b;
+                $scope.diffpct.btc.usd = ((a - b)/a)*100;
             }
             else {
-                $scope.diff.btc.usd = ((b - a)/b)*100;
+                $scope.diff.btc.usd = b-a;
+                $scope.diffpct.btc.usd = ((b - a)/b)*100;
             }
         }
         $scope.$watch('gdax.btc.usd', btcusdCallback);
@@ -95,10 +101,12 @@
             var a = parseFloat($scope.gdax.eth.usd);
             var b = parseFloat($scope.binance.eth.usd);
             if(a > b) {
-                $scope.diff.eth.usd = ((a - b)/a)*100;
+                $scope.diff.eth.usd = a-b;
+                $scope.diffpct.eth.usd = ((a - b)/a)*100;
             }
             else {
-                $scope.diff.eth.usd = ((b - a)/b)*100;
+                $scope.diff.eth.usd = b-a;
+                $scope.diffpct.eth.usd = ((b - a)/b)*100;
             }
         }
         $scope.$watch('gdax.eth.usd', ethusdCallback);
@@ -109,10 +117,12 @@
             var a = parseFloat($scope.gdax.eth.btc);
             var b = parseFloat($scope.binance.eth.btc);
             if(a > b) {
-                $scope.diff.eth.btc = ((a - b)/a)*100;
+                $scope.diff.eth.btc = a-b;
+                $scope.diffpct.eth.btc = ((a - b)/a)*100;
             }
             else {
-                $scope.diff.eth.btc = ((b - a)/b)*100;
+                $scope.diff.eth.btc = b-a;
+                $scope.diffpct.eth.btc = ((b - a)/b)*100;
             }
         }
         $scope.$watch('gdax.eth.btc', ethbtcCallback);

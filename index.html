@@ -17,6 +17,7 @@
                     <th scope="col">EXCHANGES</th>
                     <th scope="col">GDAX</th>
                     <th scope="col">BINANCE</th>
+                    <th scope="col">Difference</th>
                     <th scope="col">Percentage Difference</th>
                     
                   </tr>
@@ -27,18 +28,21 @@
                     <td><span ng-bind="gdax.btc.usd|number:4"></span></td>
                     <td><span ng-bind="binance.btc.usd|number:4"></span></td>
                     <td><span ng-bind="diff.btc.usd|number:4"></span></td>
+                    <td><span ng-bind="diffpct.btc.usd|number:4"></span></td>
                   </tr>
                   <tr>
                     <th scope="row">ETH-USD</th>
                     <td><span ng-bind="gdax.eth.usd|number:4"></span></td>
                     <td><span ng-bind="binance.eth.usd|number:4"></span></td>
                     <td><span ng-bind="diff.eth.usd|number:4"></span></td>
+                    <td><span ng-bind="diffpct.eth.usd|number:4"></span></td>
                   </tr>
                   <tr>
                     <th scope="row">ETH-BTC</th>
                     <td><span ng-bind="gdax.eth.btc|number:4"></span></td>
                     <td><span ng-bind="binance.eth.btc|number:4"></span></td>
                     <td><span ng-bind="diff.eth.btc|number:4"></span></td>
+                    <td><span ng-bind="diffpct.eth.btc|number:4"></span></td>
                   </tr>
                 </tbody>
               </table>
