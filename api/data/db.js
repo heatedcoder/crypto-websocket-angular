@@ -1,6 +1,8 @@
+console.log("I am in mongoose file");
 var mongoose = require('mongoose');
 var dburl = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost:27017/tradeapp';
 var retry = null;
+console.log("Mongo db url: "+ dburl);
 mongoose.connect(dburl);
 
 // CONNECTION EVENTS
