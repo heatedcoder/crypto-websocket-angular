@@ -1,7 +1,7 @@
 (function() {
     angular.module('exchangeApp')
     
-    .controller('exchangeCtrl', ['$scope', function($scope) {   
+    .controller('exchangeCtrl', ['$scope', 'exchangeService', function($scope, exchangeService) {   
         
          if(!$scope.gdax) $scope.gdax = {};
          if(!$scope.gdax['btc']) $scope.gdax['btc'] = {};
@@ -19,11 +19,18 @@
          if(!$scope.diffpct['btc']) $scope.diffpct['btc'] = {};
          if(!$scope.diffpct['eth']) $scope.diffpct['eth'] = {};
 
+        //  $scope.thresholdValue = 0.2;
+        //  $scope.unitsToBuy = 0.5;
+        //  $scope.unitsToSell = 0.5;
+         $scope.items = [];
+         $scope.orders = [];
+         $scope.recordTxnThreshold;
+
         var wsBinanceBTCUSD = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
         var wsBinanceETHUSD = new WebSocket('wss://stream.binance.com:9443/ws/ethusdt@ticker');
         var wsBinanceETHBTC = new WebSocket('wss://stream.binance.com:9443/ws/ethbtc@ticker');
-        var wsGDAX = new WebSocket('wss://ws-feed.gdax.com/');
-        
+        var wsGDAX = new WebSocket('wss://ws-feed.gdax.com/'); 
+        //var wsGDAX = new WebSocket('wss://ws-feed-public.sandbox.gdax.com/');
         var GDAXRequest = {
             "type": "subscribe",
             "product_ids": [
@@ -82,16 +89,84 @@
 
         // btc-usd
         var btcusdCallback = function(n, o) {
+            var orderType = "";
+            var size = "";
             var a = parseFloat($scope.gdax.btc.usd);
             var b = parseFloat($scope.binance.btc.usd);
             if(a > b) {
                 $scope.diff.btc.usd = a-b;
                 $scope.diffpct.btc.usd = ((a - b)/a)*100;
+                orderType = "sell";
+                //exchangeName = "gdax";
+                size = $scope.sellUnits;
             }
             else {
                 $scope.diff.btc.usd = b-a;
                 $scope.diffpct.btc.usd = ((b - a)/b)*100;
+                orderType = "buy";
+                size = $scope.buyUnits;
+                //exchangeName = "gdax";
             }
+            // make db transaction
+            if(parseFloat($scope.diffpct.btc.usd) >= parseFloat($scope.recordTxnThreshold)) {
+                var req = {
+                    product: 'BTC-USD',
+                    difference: $scope.diff.btc.usd,
+                    pctDifference: $scope.diffpct.btc.usd,
+                    timestamp: new Date(),
+                    exchangeDetails:  [{
+                        exchangeName: 'gdax',
+                        price: a
+                    }, {
+                        exchangeName: 'binance',
+                        price: b
+                    }]
+                }
+                exchangeService.recordTransactions(req).then(function(data) {
+                    $scope.items.push(data);
+                });
+            }
+            if($scope.isOrderInvoked) {
+                //debugger;
+                
+                if($scope.thValue && $scope.buyUnits && $scope.sellUnits) {
+                    if(parseFloat($scope.diffpct.btc.usd) >= parseFloat($scope.thValue)) {
+                        
+                        // params - 
+                        //orderType = buy|sell
+                        var orderReq = {
+                            product_id: 'BTC-USD',
+                            type: 'market',
+                            side: orderType,
+                            size: size
+    
+                        }
+                        exchangeService.createOrder(orderReq)
+                        .then(function(data) {
+                            $scope.isOrderInvoked = false;
+                            var order = {
+                                date: data.created_at,
+                                exchange: 'gdax',
+                                orderType: orderType,
+                                units: size,
+                                rate: a,
+                                amount: a*size,
+                                productName: 'BTC-USD'
+                            }
+                            $scope.orders.push(order);
+                            console.log(data);
+                        }, function(error) {
+                            $scope.isOrderInvoked = false;
+                            console.log(error);
+                            alert (JSON.stringify(error));
+                        })
+                    }
+                }
+    
+            }
+            // creating gdax buy-sell order
+            
+            
         }
         $scope.$watch('gdax.btc.usd', btcusdCallback);
         $scope.$watch('binance.btc.usd', btcusdCallback);
@@ -127,5 +202,14 @@
         }
         $scope.$watch('gdax.eth.btc', ethbtcCallback);
         $scope.$watch('binance.eth.btc', ethbtcCallback);
+
+        $scope.$watch('isOrderInvoked', function() {
+            if($scope.isOrderInvoked) {
+                $scope.invokeOrderText = "You order is waiting to be invoked";
+            }
+            else {
+                $scope.invokeOrderText = "Submit an Order";
+            }
+        })
     }]);
 })()
