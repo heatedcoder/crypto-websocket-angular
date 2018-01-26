@@ -5,13 +5,10 @@ var tradeSchema = new mongoose.Schema({
     difference: Number,
     pctDifference: Number,
     timestamp: Date,
-    exchangeDetails:  [{
-        exchangeName: String,
-        price: Number
-    }, {
-        exchangeName: String,
-        price: Number
-    }]
+    exchangeToBuyFrom: String,
+    buyPrice: Number,
+    exchangeToSellOn: String,
+    salePrice: Number
 });
 
 mongoose.model('Trade', tradeSchema);

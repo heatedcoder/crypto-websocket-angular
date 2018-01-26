@@ -126,25 +126,30 @@
                 $scope.diffpct.btc.usd = ((maxprice / minprice) - 1)*100;
             }
 
-            if(gdaxPrice > binancePrice) {
-                //$scope.diff.btc.usd = gdaxPrice-binancePrice;
-                //$scope.diffpct.btc.usd = ((gdaxPrice - binancePrice)/gdaxPrice)*100;
-
+            if(gdaxPrice == maxprice) {
                 sellOnExchange = "GDAX";
-                buyFromExchange = "BINANCE";
-                
-                buyPrice = gdaxPrice;
+                sellPrice = gdaxPrice;
+            }
+            else if(binancePrice == maxprice) {
+                sellOnExchange = "BINANCE";
                 sellPrice = binancePrice;
             }
-            else {
-               // $scope.diff.btc.usd = binancePrice-gdaxPrice;
-               // $scope.diffpct.btc.usd = ((binancePrice - gdaxPrice)/binancePrice)*100;
-                
-                sellOnExchange = "BINANCE";
+            else if(huobiPrice == maxprice) {
+                sellOnExchange = "HUOBI";
+                sellPrice = huobiPrice;
+            }
+            
+            if(gdaxPrice == minprice) {
                 buyFromExchange = "GDAX";
-
-                buyPrice = binancePrice;
-                sellPrice = gdaxPrice;
+                buyPrice = gdaxPrice;
+            }
+            else if(binancePrice == minprice) {
+                buyFromExchange = "BINANCE";
+                buyPrice = binancePricePrice;
+            }
+            else if(huobiPrice == minprice) {
+                buyFromExchange = "HUOBI";
+                buyPrice = huobiPrice;
             }
 
             // make db transaction
@@ -154,13 +159,10 @@
                     difference: $scope.diff.btc.usd,
                     pctDifference: $scope.diffpct.btc.usd,
                     timestamp: new Date(),
-                    exchangeDetails:  [{
-                        exchangeName: 'gdax',
-                        price: gdaxPrice
-                    }, {
-                        exchangeName: 'binance',
-                        price: binancePrice
-                    }]
+                    exchangeToBuyFrom: buyFromExchange,
+                    buyPrice: buyPrice,
+                    exchangeToSellOn: sellOnExchange,
+                    salePrice: sellPrice
                 }
                 exchangeService.recordTransactions(req).then(function(data) {
                     $scope.items.push(data);
@@ -174,46 +176,49 @@
                 if($scope.thValue && $scope.buyUnits && $scope.sellUnits) {
                     if(parseFloat($scope.diffpct.btc.usd) >= parseFloat($scope.thValue)) {
                         
-                        // GDAX
-                        if(buyFromExchange=='GDAX'){
-                            orderSide = 'buy';
-                            orderSize = buySize;
-                            orderPrice = buyPrice;
-                        }
-                        else {
-                            orderSide = 'sell';
-                            orderSize = sellSize;
-                            orderPrice = sellPrice;
-                        }
-
-                        var orderReq = {
-                            product_id: 'BTC-USD',
-                            type: orderType,
-                            side: orderSide,
-                            size: orderSize,
-                            price: orderPrice
-                        }
-
-                        exchangeService.createOrder(orderReq)
-                        .then(function(data) {
-                            $scope.isOrderInvoked = false;
-                            var order = {
-                                date: data.created_at,
-                                exchange: 'gdax',
-                                ordertype: orderType,
-                                orderside: orderSide,
-                                units: orderSize,
-                                rate: a,
-                                amount: a*orderSize,
-                                productName: 'BTC-USD'
+                        // Place Order on GDAX
+                        if(buyFromExchange=='GDAX' || sellOnExchange=='GDAX'){
+                            
+                            if(buyFromExchange=='GDAX'){
+                                orderSide= 'buy';
+                                orderSize= buySize;
+                                orderPrice= buyPrice;
                             }
-                            $scope.orders.push(order);
-                            console.log(data);
-                        }, function(error) {
-                            $scope.isOrderInvoked = false;
-                            console.log(error);
-                            alert (JSON.stringify(error));
-                        })
+                            else if (sellOnExchange=='GDAX'){
+                                orderSide= 'sell';
+                                orderSize= sellSize;
+                                orderPrice= sellPrice;
+                            }
+                            
+                            var orderReq = {
+                                product_id: 'BTC-USD',
+                                type: orderType,
+                                side: orderSide,
+                                size: orderSize,
+                                price: orderPrice
+                            }
+
+                            exchangeService.createOrder(orderReq)
+                            .then(function(data) {
+                                $scope.isOrderInvoked = false;
+                                var order = {
+                                    date: data.created_at,
+                                    exchange: 'gdax',
+                                    ordertype: orderType,
+                                    orderside: orderSide,
+                                    units: orderSize,
+                                    rate: a,
+                                    amount: a*orderSize,
+                                    productName: 'BTC-USD'
+                                }
+                                $scope.orders.push(order);
+                                console.log(data);
+                            }, function(error) {
+                                $scope.isOrderInvoked = false;
+                                console.log(error);
+                                alert (JSON.stringify(error));
+                            })
+                        }
                     }
                 }
     
@@ -234,9 +239,57 @@
             var maxprice = Math.max(gdaxPrice, binancePrice, huobiPrice);
             var minprice = Math.min(gdaxPrice, binancePrice, huobiPrice);
             
+            var sellOnExchange = "";
+            var sellPrice = "";
+
+            var buyPrice = "";
+            var buyFromExchange = "";
+
             if(maxprice && minprice) {
                 $scope.diff.eth.usd = maxprice-minprice;
                 $scope.diffpct.eth.usd = ((maxprice / minprice) - 1)*100;
+            }
+
+            if(gdaxPrice == maxprice) {
+                sellOnExchange = "GDAX";
+                sellPrice = gdaxPrice;
+            }
+            else if(binancePrice == maxprice) {
+                sellOnExchange = "BINANCE";
+                sellPrice = binancePrice;
+            }
+            else if(huobiPrice == maxprice) {
+                sellOnExchange = "HUOBI";
+                sellPrice = huobiPrice;
+            }
+            
+            if(gdaxPrice == minprice) {
+                buyFromExchange = "GDAX";
+                buyPrice = gdaxPrice;
+            }
+            else if(binancePrice == minprice) {
+                buyFromExchange = "BINANCE";
+                buyPrice = binancePricePrice;
+            }
+            else if(huobiPrice == minprice) {
+                buyFromExchange = "HUOBI";
+                buyPrice = huobiPrice;
+            }
+            // make db transaction
+            if(parseFloat($scope.diffpct.eth.usd) >= parseFloat($scope.recordTxnThreshold)) {
+                var req = {
+                    product: 'ETH-USD',
+                    difference: $scope.diff.eth.usd,
+                    pctDifference: $scope.diffpct.eth.usd,
+                    timestamp: new Date(),
+                    exchangeToBuyFrom: buyFromExchange,
+                    buyPrice: buyPrice,
+                    exchangeToSellOn: sellOnExchange,
+                    salePrice: sellPrice
+                }
+                exchangeService.recordTransactions(req).then(function(data) {
+                    $scope.items.push(data);
+                });
             }
         }
 

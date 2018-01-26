@@ -88,20 +88,16 @@ module.exports.createOrder = function(req, res) {
 
  module.exports.recordTrnsactions = function(req, res) {
     console.log("record txns");
-    
       Trade
         .create({
             product: req.body.product,
             difference: req.body.difference,
             pctDifference: req.body.pctDifference,
             timestamp: req.body.timestamp,
-            exchangeDetails:  [{
-                exchangeName: req.body.exchangeDetails[0].exchangeName,
-                price: req.body.exchangeDetails[0].price
-            }, {
-                exchangeName: req.body.exchangeDetails[1].exchangeName,
-                price: req.body.exchangeDetails[1].price
-            }]
+            exchangeToBuyFrom: req.body.exchangeToBuyFrom,
+            buyPrice: req.body.buyPrice,
+            exchangeToSellOn: req.body.exchangeToSellOn,
+            salePrice: req.body.salePrice
         }, function(err, response) {
           if (err) {
             console.log("Error creating hotel");
