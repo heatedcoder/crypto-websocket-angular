@@ -2,10 +2,13 @@ const request = require('request');
 var crypto = require('crypto');
 var mongoose = require('mongoose');
 var Trade = mongoose.model('Trade');
+var secret = 'kZtyH/8Hn8Wq82oIl7Lvhrhv/6OGkMWy4oOHQQ+2CBYVef0kJ0uANme7Dg1Dm+NZp4ud4VLjyuYf4wJKPIeaJQ==';
+var apikey = '1ba2be427e2c4f03989560441d9ce730';
+var passphrase = 'hfllqwfxrh';
 
 //var body;
 var createSign = function(time, body) {
-    var secret = 'rnqk8/lpN2tidlJHDamK30e34cAnYX9c0OrRFXk4A4+WydgqCR0wdsBC0m9Jyc/GqzFhohVfsdlpQWfGPrc6kA==';
+    
     var timestamp = time;
     var requestPath = '/orders';
     
@@ -42,19 +45,12 @@ module.exports.createOrder = function(req, res) {
             size: req.body.size, // units to buy or sell 
             side: req.body.side,
             type: req.body.type,
+            price: req.body.price,
             product_id: req.body.product_id
         }
 
         var sign = createSign(time, orderReqBody);
         console.log(sign);
-        // var orderReqBody = {
-        //     size: '0.1', // units to buy or sell 
-        //     side: 'sell',
-        //     type: 'market',
-        //     product_id: 'BTC-USD'
-        // }
-
-        
 
         request.post({
             url: 'https://api-public.sandbox.gdax.com/orders',
@@ -62,10 +58,10 @@ module.exports.createOrder = function(req, res) {
             headers: {
                 'User-Agent': 'test',
                 'content-type': 'application/json',
-                'CB-ACCESS-KEY': '537f45875e2d7307b514aa7adf53237b',
+                'CB-ACCESS-KEY': apikey,
                 'CB-ACCESS-SIGN': sign,
                 'CB-ACCESS-TIMESTAMP': time,
-                'CB-ACCESS-PASSPHRASE': '5lzbkclycaf'
+                'CB-ACCESS-PASSPHRASE': passphrase
               },
             body: orderReqBody
         }, function(err, response, body) {
@@ -92,20 +88,16 @@ module.exports.createOrder = function(req, res) {
 
  module.exports.recordTrnsactions = function(req, res) {
     console.log("record txns");
-    
       Trade
         .create({
             product: req.body.product,
             difference: req.body.difference,
             pctDifference: req.body.pctDifference,
             timestamp: req.body.timestamp,
-            exchangeDetails:  [{
-                exchangeName: req.body.exchangeDetails[0].exchangeName,
-                price: req.body.exchangeDetails[0].price
-            }, {
-                exchangeName: req.body.exchangeDetails[1].exchangeName,
-                price: req.body.exchangeDetails[1].price
-            }]
+            exchangeToBuyFrom: req.body.exchangeToBuyFrom,
+            buyPrice: req.body.buyPrice,
+            exchangeToSellOn: req.body.exchangeToSellOn,
+            salePrice: req.body.salePrice
         }, function(err, response) {
           if (err) {
             console.log("Error creating hotel");
@@ -125,3 +117,64 @@ module.exports.createOrder = function(req, res) {
     console.log('in in in')
     res.json({type: 'success'})
 }
+
+module.exports.getGDAX = function(req, res) {
+    var productName = req.params.productName;
+
+    request({
+        url: 'https://api.gdax.com/products/'  +  productName + '/book',
+        json: true,
+        headers: {
+            'User-Agent': 'test'
+          }
+    }, function(err, response, body) {
+        if(response) {
+            res
+            .json(response);
+        }
+        else {
+            res
+            .status(500)
+            .json(err);
+        }
+        
+    });
+  };
+
+  module.exports.getBinance = function(req, res) {
+    var productName = req.params.productName;
+
+    request({
+        url: `https://api.binance.com/api/v3/ticker/price?symbol=${productName}`,
+        json: true
+    }, function(err, response, body) {
+        if(response) {
+            res
+            .json(response);
+        }
+        else {
+            res
+            .status(500)
+            .json(err);
+        }
+    });
+  };
+
+  module.exports.getHuobi = function(req, res) {
+    var productName = req.params.productName;
+
+    request({
+        url: `https://api.huobi.pro/market/detail/merged?symbol=${productName}`,
+        json: true
+    }, function(err, response, body) {
+        if(response) {
+            res
+            .json(response);
+        }
+        else {
+            res
+            .status(500)
+            .json(err);
+        }
+    });
+  };
