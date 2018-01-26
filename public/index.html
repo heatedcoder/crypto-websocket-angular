@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Real Time GDAX and Binance Exchange Rates</title>
-    <link rel="stylesheet" href="css/bootstrap.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap.css" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
@@ -17,16 +17,18 @@
                     <th scope="col">EXCHANGES</th>
                     <th scope="col">GDAX</th>
                     <th scope="col">BINANCE</th>
+                    <th scope="col">HUOBI</th>
                     <th scope="col">Difference</th>
                     <th scope="col">Percentage Difference</th>
                     
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr style="color:greenyellow">
                     <th scope="row">BTC-USD</th>
                     <td><span ng-bind="gdax.btc.usd|number:4"></span></td>
                     <td><span ng-bind="binance.btc.usd|number:4"></span></td>
+                    <td><span ng-bind="huobi.btc.usd|number:4"></span></td>
                     <td><span ng-bind="diff.btc.usd|number:4"></span></td>
                     <td><span ng-bind="diffpct.btc.usd|number:4"></span></td>
                   </tr>
@@ -34,6 +36,7 @@
                     <th scope="row">ETH-USD</th>
                     <td><span ng-bind="gdax.eth.usd|number:4"></span></td>
                     <td><span ng-bind="binance.eth.usd|number:4"></span></td>
+                    <td><span ng-bind="huobi.eth.usd|number:4"></span></td>
                     <td><span ng-bind="diff.eth.usd|number:4"></span></td>
                     <td><span ng-bind="diffpct.eth.usd|number:4"></span></td>
                   </tr>
@@ -41,6 +44,7 @@
                     <th scope="row">ETH-BTC</th>
                     <td><span ng-bind="gdax.eth.btc|number:4"></span></td>
                     <td><span ng-bind="binance.eth.btc|number:4"></span></td>
+                    <td><span ng-bind="huobi.eth.btc|number:4"></span></td>
                     <td><span ng-bind="diff.eth.btc|number:4"></span></td>
                     <td><span ng-bind="diffpct.eth.btc|number:4"></span></td>
                   </tr>
@@ -68,12 +72,13 @@
 
               </div>
               <hr>
-              <h2>GDAX buy sell orders</h2>
+              <h2>Order Details</h2>
               <table class="table" style="margin-bottom: 80px;">
                   <tr>
                       <th scope="col">Txn Date/Time</th>
                       <th scope="col">Exchange Name</th>
                       <th scope="col">Order Type</th>
+                      <th scope="col">Order Side</th>
                       <th scope="col">Units</th>
                       <th scope="col">Rate</th>
                       <th scope="col">Amount</th>
@@ -83,6 +88,7 @@
                       <td><span ng-bind="order.date"></span></td>
                       <td><span ng-bind="order.exchange"></span></td>
                       <td><span ng-bind="order.orderType"></span></td>
+                      <td><span ng-bind="order.orderSide"></span></td>
                       <td><span ng-bind="order.units"></span></td>
                       <td><span ng-bind="order.rate"></span></td>
                       <td><span ng-bind="order.amount"></span></td>
@@ -91,33 +97,33 @@
               </table>
 
               <hr>
-              <span style="font-size:25px">Gdax Txns above pct diff of   </span>
+             <!--  <span style="font-size:25px">Gdax Txns above pct diff of   </span>
               
               <input type="text" ng-model="recordTxnThreshold" 
-              style="border-radius:5px;width:50px;display:inline" class="form-control" />
+              style="border-radius:5px; width:60px;display:inline" class="form-control" />
               
               <table class="table">
                 <tr>
                   <th scope="col">Sr. No</th>
+				  <th scope="col">Time of Txn</th>
                   <th scope="col">Product</th>
+				  <th scope="col">Price in GDAX</th>
+                  <th scope="col">Price in Binance</th>
                   <th scope="col">Difference($)</th>
                   <th scope="col">Percent Difference</th>
-                  <th scope="col">Price in GDAX</th>
-                  <th scope="col">Price in Binance</th>
-                  <th scope="col">Time of Txn</th>
                 </tr>
                 <tr ng-repeat="item in items track by $index">
-                    <td><span ng-bind="$index+1"></span></td>
+                  <td><span ng-bind="$index+1"></span></td>
+				  <td><span ng-bind="item.timestamp"></span></td>
                   <td><span ng-bind="item.product"></span></td>
+				  <td><span ng-bind="item.exchangeDetails[0].price"></span></td>
+                  <td><span ng-bind="item.exchangeDetails[1].price"></span></td>
                   <td><span ng-bind="item.difference |number:4"></span></td>
                   <td><span ng-bind="item.pctDifference |number:4"></span></td>
-                  <td><span ng-bind="item.exchangeDetails[0].price"></span></td>
-                  <td><span ng-bind="item.exchangeDetails[1].price"></span></td>
-                  <td><span ng-bind="item.timestamp"></span></td>
                 </tr>
                 
               </table>
-
+ -->
     </div>
 
 

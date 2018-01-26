@@ -16,4 +16,17 @@ router
   .route('/getRecordedTxns')
   .get(ctrlExchange.getRecordedTransactions);
 
+  // GDAX routes
+router
+  .route('/gdax/:productName')
+  .get(ctrlExchange.getGDAX);
+
+router
+  .route('/binance/:productName')
+  .get(ctrlExchange.getBinance);
+
+router
+  .route('/huobi/:productName')
+  .get(ctrlExchange.getHuobi);
+
 module.exports = router;
