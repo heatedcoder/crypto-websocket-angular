@@ -165,7 +165,10 @@
                     salePrice: sellPrice
                 }
                 exchangeService.recordTransactions(req).then(function(data) {
-                    $scope.items.push(data);
+                    if($scope.items.length>10) {
+                        $scope.items.length=10;
+                    }
+                    $scope.items.unshift(data);
                 });
             }
 
